@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('api/registro', 'UsuarioController@Registro');
+Route::post('api/login', 'UsuarioController@Login');
+Route::resource('/api/usuario','UsuarioCOntroller');
