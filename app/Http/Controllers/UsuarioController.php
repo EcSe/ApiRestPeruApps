@@ -112,4 +112,55 @@ class UsuarioController extends Controller
         }
         return response()->json($data,'200');
     }
+
+    public function show($idusuario)
+    {
+        return UsuarioModel::where('CH_ID_USUARIO',$idusuario)->get();
+    }
+
+    public function update(Request $request,$idusuario)
+    {
+        $json = $request->input('json', null);
+        $obj = json_decode($json);
+
+        //$idusuario = (!is_null($json) && isset($parametros->idusuario)) ? $parametros->idusuario : null;
+        $password = (!is_null($json) && isset($obj->password)) ? $obj->password : null;
+        $nombre = (!is_null($json) && isset($obj->nombre)) ? $obj->nombre : null;
+        $apellido_pat = (!is_null($json) && isset($obj->apellido_pat)) ? $obj->apellido_pat : null;
+        $apellido_mat = (!is_null($json) && isset($obj->apellido_mat)) ? $obj->apellido_mat : null;
+        $direccion = (!is_null($json) && isset($obj->direccion)) ? $obj->direccion : null;
+        $dni = (!is_null($json) && isset($obj->dni)) ? $obj->dni : null;
+        $foto = (!is_null($json) && isset($obj->foto)) ? $obj->foto : null;
+
+        $pass_hash = password_hash($password,PASSWORD_DEFAULT);
+        
+        $usuario = UsuarioModel::find($idusuario);
+        //var_dump($usuario);
+        if( isset ($usuario))
+        {
+             $usuario->VC_PASSWORD = $pass_hash;
+             $usuario->VC_NOMBRE = $nombre;
+             $usuario->VC_APELLIDO_PAT = $apellido_pat;
+             $usuario->VC_APELLIDO_MAT = $apellido_mat;
+             $usuario->VC_DIRECCION = $direccion;
+             $usuario->VC_DNI = $dni;
+             $usuario->VC_FOTO = $foto;
+
+             $usuario->save();
+             $data = array(
+                 'status' => 'success',
+                 'code' => '200',
+                 'mensaje' => 'El usuario se ha actualizado correctamente'
+             );
+        }else
+        {
+            $data = array(
+                'status' => 'failed',
+                'code' => '400',
+                'mensaje' => 'Ha fallado la actualizacion'
+            );
+        }
+
+        return response()->json($data,'200');
+    }
 }
